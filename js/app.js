@@ -32,7 +32,7 @@ const App = {
                 ];
             let winner = null
 
-            winningPatterns.forEach(patterns => {
+            winningPatterns.forEach(pattern => {
                 const p1Wins = pattern.every(v => p1Moves.includes(v))
                 const p2Wins = pattern.every(v => p2Moves.includes(v))
 
@@ -41,8 +41,8 @@ const App = {
             })
 
         return{
-            status: 'in-progress', //in-progress | complete
-            winner: 1, // 1 | 2 | null
+            status: moves.length === 9 || winner != null ? "complete" : "in-progress", //in-progress | complete
+            winner, // 1 | 2 | null
         }
     },
 
@@ -75,14 +75,14 @@ const App = {
         //Todo
         App.$.squares.forEach((square) =>{
             square.addEventListener("click", (event) => {
-                console.log('Square with id ${event.target.id} was clicked');
-                console.log('Current player is ${App.state.currentPlayer}');
-
                 //Check if there is already a play, if so, return early
                 const hasMove = (squareId) => {
-                    const existingMove = App.state.moves.find(move => move.squareId === squareId)
-                    return existingMove !== undefined
-                }
+                    const existingMove = App.state.moves.find(
+                        (move) => move.squareId === squareId
+                    );
+                    return existingMove !== undefined;   
+                };
+                
                 
                 if (square.hasChildNodes()){
                     return;
@@ -107,19 +107,19 @@ const App = {
                 App.state.moves.push({
                     squareId: +square.id,
                     playerId: currentPlayer,
-                })
+                });
 
           
                 square.replaceChildren(icon);
                 //Check if there is a winner or tie game
-                const status = App.getGameStatus(App.state.moves);
+                const game = App.getGameStatus(App.state.moves);
 
                 if (game.status === "complete"){
                     App.$.modal.classList.remove("hidden");
 
                     let message = "";
                     if(game.winner){
-                        message = 'Player ${game.winner} wins!';
+                        message = `Player ${game.winner} wins!`;
                     } else {
                         message = "Tie game!";
                     }
